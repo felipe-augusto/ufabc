@@ -8,3 +8,4 @@
 * [Lista 3](lista3/README.md)
 * [Lista 4](lista4/README.md)
 * [Lista 5](lista5/README.md)
+* [Lista 6](lista6/README.md)

@@ -2,6 +2,11 @@
 
 Alguns dos códigos que eu desenvolvi durante o meu curso de Bacharelado em Ciência da Computação na UFABC. Divirta-se (ou não)!
 
+## Disciplinas
+
+* [Programação estruturada](programacao_estruturada/README.md)
+* [Algoritmos e Estruturas de Dados II](aed_2/README.md)
+
 ## Sugestão
 
 Antes de olhar qualquer código de qualquer disciplina recomendo tentar resolver o exercício sozinho primeiro, se depois de umas duas horas ainda estiver empacatado, talvez dar uma lida rápida no meu código lhe dê alguns insights. A melhor forma de se tornar um bom programador é **programando**, e não copiando código dos outros sem nem se dar ao trabalho de entender o que está acontencendo. Isto me leva à minha segunda sugestão:
