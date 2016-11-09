@@ -20,19 +20,19 @@ typedef struct estrutura {
 	int * positions;
 	int n;
 	int numberPositions;
+	bool keyword;
 } Key ;
 
 // FOWARD DECLARATIONS
 string readFile();
-void writeFile();
 void findPositions(char * keyword, Key * insert);
-void showPositions(int * t, int n);
-void buscaRemissivo(string test);
-void insertWord(char * palavra);
+void buscaRemissivo(string test, bool keywords);
+void insertWord(char * palavra, bool is_keyword);
 bool my_predicate(char c);
 
+// melhor se fosse alocado dinamicamente, mas beleza (!)
 const int m = 43;
-const int n = 30;
+const int n = 300;
 int pesos[n];
 
 // hash array with lists
@@ -85,7 +85,7 @@ int a = 0;
 NoTrie * raiz = new NoTrie;// raiz da árvore
 
 // CRIE TRIE
-char chave[100];
+char chave[200];
 
 char alfabeto[NUM_CHILDREN] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
 int buscaBinRec(char vetor[],int ini,int fim,char pesq);
@@ -96,6 +96,28 @@ int last_position;
 // para guardar os prefixos
 char prefix[100];
 int current = 0;
+
+void buscaRemissivo(string test, bool keywords = false) { 
+	// encontra a hash da string
+	int i = 0;
+	int posi = h(toLower(strdup(test.c_str())), test.size());
+	for (list<Key>::iterator it = hash[posi].begin(); it != hash[posi].end(); ++it){
+		// if para lidar com colisoes -> teoricamente estaria na primeira posicao]
+	  	if(it->palavra == stoLower(test) && it->keyword == keywords) {
+	  		cout << test << ": ";
+	  		for(i = 0; i < it->numberPositions; i++) {
+	  			if(i + 1 >= it->numberPositions) {
+	  				cout << (int) it->positions[i];
+	  			} else {
+	  				cout << (int) it->positions[i] << ", ";
+	  			}
+	  			
+	  		}
+	  		cout << endl;
+	  	}
+
+	}
+}
 
 // funcao recursiva que imprime as palavras sugeridas por prefixos
 void printPalavra(NoTrie * pt, char sugestion [], int max, char chave [], int depth = -1){
@@ -116,8 +138,8 @@ void printPalavra(NoTrie * pt, char sugestion [], int max, char chave [], int de
 			string sug = "";
 			for(k = 0; k < depth; k++) {
 				sug += sugestion[k];
+				buscaRemissivo(sug, true);
 			};
-			buscaRemissivo(sug);
 			current++;
 		}
 	} else {
@@ -238,7 +260,7 @@ string readFile(){
 	string str; 
 	int i,temp;
 	ifstream myfile; // abre arquivo e aponta para próximo elemento a ser lido
-  	myfile.open ("input1.txt",ios::in);
+  	myfile.open ("input2.txt",ios::in);
 	if (myfile.is_open()){
 		i = 0;
 		// encontra todas as keywords
@@ -254,12 +276,11 @@ string readFile(){
 					str = line;
 					line = line.substr(line.length());
 				}
-				// str.erase(remove_if(str.begin(), str.end(), my_predicate), str.end());
-				// convert string to char *
-				char * palavra = strdup(str.c_str());
-				insertWord(toLower(palavra));
+				string temp = str;
+				temp.erase(remove_if(temp.begin(), temp.end(), my_predicate), temp.end());
+				char * palavra = strdup(temp.c_str());
+				insertWord(toLower(palavra), false);
 			}
-
 		}
 		return str;
 		myfile.close();
@@ -270,14 +291,6 @@ string readFile(){
 bool my_predicate(char c) {
 	return !isalpha(c);
 };
-
-void showPositions(int * t, int n) {
-	int i;
-	for(i = 0; i < n; i++){
-		cout << t[i] << "| ";
-	}
-}
-
 
 // faz um push em um array
 // so de pensar como isso eh facil de fazer em outras linguages, me faz querer chorar :(
@@ -307,7 +320,7 @@ void findPositions(char *  keyword, Key * insert) {
 	string str; 
 	int i,temp;
 	ifstream myfile; // abre arquivo e aponta para próximo elemento a ser lido
-  	myfile.open ("input1.txt",ios::in);
+  	myfile.open ("input2.txt",ios::in);
   	int size = 1;
 	int * positions = (int *) malloc(size * sizeof(int));
 	if (myfile.is_open()){
@@ -331,7 +344,6 @@ void findPositions(char *  keyword, Key * insert) {
 					str = line;
 					line = line.substr(line.length());
 				}
-				// remove all non word characters
 				str.erase(remove_if(str.begin(), str.end(), my_predicate), str.end());
 				if (stoLower(str) == toLower(keyword)) {
 					// calculates the positions
@@ -351,33 +363,39 @@ void findPositions(char *  keyword, Key * insert) {
 	} else cout << "Unable to open file";
 
 }
-// escreve arquivo de saída
-void writeFile(){
-	ofstream myfile; // abre arquivo e aponta para posição onde próximo elemento vai ser escrito
-  	myfile.open("saida.txt",ios::app); // append the text at the final position of the file
-	myfile << "Escrevendo no arquivo" << endl;
-	myfile.close();
-}
 
-void insertWord(char * palavra) {
+void insertWord(char * palavra, bool is_keyword) {
+	palavra = toLower(palavra);
+	// ter certeza que a palavra nao existe na trie
+	// se existir da SEGMENTATION FAULT
+	buscaDigital(palavra, raiz, 0, length(palavra));
+	if(a) {
+		insereDigital(palavra);
+		// calculate hash
+		int position = h(palavra, strlen(palavra));
+		// this avoid collisions automatically
+		Key * insert_key = new Key();
+		insert_key->palavra = palavra;
+		insert_key->n = strlen(palavra);
+		insert_key->keyword = is_keyword;
+		// appends to insert_key the positions and the numberPositions
+		findPositions(toLower(palavra), insert_key);
+		// insert on hash table
+		hash[position].push_back(*insert_key);
+	} else {
+		if(is_keyword) {
+			int posi = h(palavra, strlen(palavra));
+			for (list<Key>::iterator it = hash[posi].begin(); it != hash[posi].end(); ++it){
+				// if para lidar com colisoes -> teoricamente estaria na primeira posicao]
+			  	if(toLower(it->palavra) == stoLower(palavra)) {
+			  		it->keyword = true;
+				}
+			}
+		}
 
-}
-
-void buscaRemissivo(string test) { 
-	// encontra a hash da string
-	int i = 0;
-	int posi = h(toLower(strdup(test.c_str())), test.size());
-	cout << "A palavra " << test << " aparece na(s) linha(s): ";
-	for (list<Key>::iterator it = hash[posi].begin(); it != hash[posi].end(); ++it){
-		// if para lidar com colisoes -> teoricamente estaria na primeira posicao]
-	  	if(it->palavra == stoLower(test)) {
-	  		for(i = 0; i < it->numberPositions; i++) {
-	  			cout << (int) it->positions[i] << " ";
-	  		}
-	  	}
 	}
-	cout << endl;
 }
+
 
 /* 
 =============== MAIN
@@ -389,7 +407,7 @@ main(){
 	int position;
 
 	// MY IMPLEMENTATION STARTS HERE
-
+	cout << "==== ATIVIDADE PRATICA 5 ====" << endl;
 	// create weight array
 	geraPesos();
     // read the keywords
@@ -404,19 +422,7 @@ main(){
 		key = keywords.substr(0, pos);
 		// convert key to char *
 		tmp = strdup(key.c_str());
-		// inserts word into trie
-		strcpy(chave, toLower(tmp));
-		insereDigital(chave);
-		// calculate hash
-		position = h(tmp, strlen(tmp));
-		// this avoid collisions automatically
-		Key * insert_key = new Key();
-		insert_key->palavra = tmp;
-		insert_key->n = strlen(tmp);
-		// appends to insert_key the positions and the numberPositions
-		findPositions(toLower(tmp), insert_key);
-		// insert on hash table
-		hash[position].push_back(*insert_key);
+		insertWord(tmp, true);
 		// erase from the original string the splitted part
 		keywords.erase(0, pos + delimiter.length());
 		// this means we are at the last position
@@ -426,11 +432,14 @@ main(){
 	}
 
 	// dada uma palavra retorna
-	string test = "Google";
+	cout << "(a) busca de uma palavra do indice remissivo" << endl;
+	string test = "as";
 	buscaRemissivo(test);
-
-	// sugestao de palavras com suffixo
-	strcpy(chave,"");
-	// raiz da arvore, prefixo fornececido pelo usuario, numero maximo de palavras
-	sugere(raiz, chave, 100);
+	test = "since";
+	buscaRemissivo(test);
+	
+	// indice remissivo em ordem lexicografica
+	cout << "(b) impressao do indice remissivo em ordem lexicografica" << endl;
+	strcpy(chave, "");
+	sugere(raiz, chave, 120); // raiz trie, chave fazia, maximo 120 resultados
 }
