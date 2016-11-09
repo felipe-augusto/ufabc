@@ -1,0 +1,14 @@
+Android is a Linux-based operating system designed primarily for touchscreen mobile devices
+such as smartphones and tablet computers, developed by Google in conjunction with the Open
+Handset Alliance. Initially developed by Android Inc, whom Google financially backed and
+later purchased. Android was unveiled along with the founding of the Open Handset Alliance,
+a consortium of 86 hardware, software, and telecommunication companies devoted to advancing
+open standards for mobile devices. Google releases the Android code as open source,
+under the Apache License. The Android Open Source Project, led by Google, is tasked with the
+maintenance and further development of Android. Additionally, Android has a large community
+of developers writing applications that extend the functionality of devices, written
+primarily in a customized version of Java. They are available for download through Google Play
+or third-party sites. 
+
+#
+Android,Linux,Java,applications,Google 

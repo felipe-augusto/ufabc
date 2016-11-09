@@ -1,0 +1,17 @@
+Java is a programming language originally developed by James Gosling at Sun Microsystems (which
+has since merged into Oracle Corporation) and released as a core component of Sun Microsystems
+Java platform. Java applications are typically compiled to bytecode (class file) that can run on
+any Java Virtual Machine regardless of computer architecture. Java is a general-purpose,
+concurrent, class-based, object-oriented language that is specifically designed to have as few
+implementation dependencies as possible. It is intended to let application developers "write once,
+run anywhere", meaning that code that runs on one platform does not need to be recompiled to run
+on another. Java is one of the most popular programming languages in use, particularly for
+client-server web applications, with a reported 10 million users.
+
+The original and reference implementation Java compilers, virtual machines, and class libraries were
+developed by Sun. In compliance with the specifications of the Java Community Process, Sun relicensed
+most of its Java technologies under the GNU General Public License. Others have also developed
+alternative implementations of these Sun technologies, such as the GNU Compiler for Java and GNU Classpath.
+
+#
+Java,programming,language,Microsystems,applications,Sun,GNU
