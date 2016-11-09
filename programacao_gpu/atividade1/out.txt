@@ -1,0 +1,26 @@
+======= Matriz 256x256 =======
+CPU   =      139.3ms 
+GPU_GLOBAL - GeForce GTX TITAN X =      238.3ms 
+GPU_SHARED - GeForce GTX TITAN X =       69.2ms
+======= Matriz 256x256 =======
+CPU   =      142.3ms 
+GPU_GLOBAL - GeForce GTX 480 =       60.1ms 
+GPU_SHARED - GeForce GTX 480 =       70.0ms
+
+======= Matriz 512x512 =======
+CPU   =     1240.1ms 
+GPU_GLOBAL - GeForce GTX TITAN X =      251.6ms 
+GPU_SHARED - GeForce GTX TITAN X =       70.3ms
+======= Matriz 512x512 =======
+CPU   =     1240.5ms 
+GPU_GLOBAL - GeForce GTX 480 =       61.4ms 
+GPU_SHARED - GeForce GTX 480 =       70.6ms 
+
+======= Matriz 1024x1024 =======
+CPU   =    10412.5ms 
+GPU_GLOBAL - GeForce GTX TITAN X =      260.7ms 
+GPU_SHARED - GeForce GTX TITAN X =       73.8ms
+======= Matriz 1024x1024 =======
+CPU   =    11441.7ms 
+GPU_GLOBAL - GeForce GTX 480 =       89.2ms 
+GPU_SHARED - GeForce GTX 480 =       71.7ms
