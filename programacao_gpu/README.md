@@ -3,8 +3,8 @@
 
 ### Atividades
 
-* [Atividade 1](atividade1/README.md)
-* [Atividade 2](atividade2/README.md)
-* [Atividade 3](atividade3/README.md)
-* [Atividade 4](atividade4/README.md)
-* [Atividade 5](atividade5/README.md)
+* [Atividade 1](atividade1)
+* [Atividade 2](atividade2)
+* [Atividade 3](atividade3)
+* [Atividade 4](atividade4)
+* [Atividade 5](atividade5)
