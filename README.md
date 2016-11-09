@@ -4,8 +4,9 @@ Alguns dos códigos que eu desenvolvi durante o meu curso de Bacharelado em Ciê
 
 ## Disciplinas
 
-* [Programação estruturada](programacao_estruturada/README.md)
 * [Algoritmos e Estruturas de Dados II](aed_2/README.md)
+* [Processamento de Imagens utilizando GPU](programacao_gpu/README.md)
+* [Programação Estruturada](programacao_estruturada/README.md)
 
 ## Sugestão
 
