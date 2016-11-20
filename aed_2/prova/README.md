@@ -79,3 +79,13 @@ Lembrando que uma **árvore degenerada** é aquela em que cada nó possui apenas
 
 Para uma árvore degenerada fará **n** (número de nós) comparações, já para uma árvore balançeada fará **floor(log n + 1)**.
 
+#### **7. Quais são as propriedades de uma árvore AVL?
+
+Dado qualquer nó x de uma árvore AVL, sendo he(x) a altura da sub-árvore esquerda do nó x, e hd(x) a altura da sub-árvore direita do nó x, a diferença entre as duas alturas é no máximo um. Ou, formalmente: | he(x) - hd(x) | <= 1
+
+#### **12. Quais são as propriedades de uma árvore rubro-negra?
+
+* Todo nó externo é preto (raiz);
+* Para cada nó, todos os caminhos de um nó até as folhas contêm mesmo número de nós pretos;
+* Se um nó é vermelho, então ambos filhos são pretos. (ou um pai vermelho não pode ter um filho vermelho)
+
