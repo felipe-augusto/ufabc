@@ -1,0 +1,81 @@
+FUNCTION_BLOCK temperatura
+
+VAR_INPUT
+    temperatura: REAL;
+    target: REAL;
+END_VAR
+
+VAR_OUTPUT
+    pwm: REAL;
+END_VAR
+
+FUZZIFY target
+    TERM too_cold := trian 0 0 5;
+    TERM cold := trape 0  5 10 15;
+    TERM warm := trape 10 15 20 25;
+    TERM hot := trape 20 25 30 35;
+    TERM too_hot := trian 30 35 35;
+END_FUZZIFY
+
+// como se fosse o sensor
+FUZZIFY temperatura
+    TERM too_cold := trian 0 0 5;
+    TERM cold := trape 0  5 10 15;
+    TERM warm := trape 10 15 20 25;
+    TERM hot := trape 20 25 30 35;
+    TERM too_hot := trian 30 35 35;
+END_FUZZIFY
+
+DEFUZZIFY pwm
+    TERM coldvh := trian -100 -82.5 -65;
+    TERM coldh := trian -80 -65 -50;
+    TERM coldlh := trian -65 -50 -35;
+    TERM cold := trian -50 -25 0;
+    TERM zero := trian -10 0 10;
+    TERM warm := trian 0 25 50;
+    TERM warmlh := trian 35 50 65;
+    TERM warmh := trian 50 65 80;
+    TERM warmvh := trian 65 82.5 100;
+
+    METHOD : COG;
+    DEFAULT := 0;
+END_DEFUZZIFY
+
+RULEBLOCK No1
+	AND : MIN;
+	ACT : MIN;
+	ACCU : MAX;
+
+	RULE 1 : IF target IS too_cold AND temperatura IS too_cold THEN pwm IS zero;
+        RULE 2 : IF target IS too_cold AND temperatura IS cold THEN pwm IS cold;
+        RULE 3 : IF target IS too_cold AND temperatura IS warm THEN pwm IS coldlh;
+        RULE 4 : IF target IS too_cold AND temperatura IS hot THEN pwm IS coldh;
+        RULE 5 : IF target IS too_cold AND temperatura IS too_hot THEN pwm IS coldvh;
+
+	RULE 6 : IF target IS cold AND temperatura IS too_cold THEN pwm IS warm;
+        RULE 7 : IF target IS cold AND temperatura IS cold THEN pwm IS zero;
+        RULE 8 : IF target IS cold AND temperatura IS warm THEN pwm IS cold;
+        RULE 9 : IF target IS cold AND temperatura IS hot THEN pwm IS coldlh;
+        RULE 10 : IF target IS cold AND temperatura IS too_hot THEN pwm IS coldh;
+
+	RULE 11 : IF target IS warm AND temperatura IS too_cold THEN pwm IS warmlh;
+        RULE 12 : IF target IS warm AND temperatura IS cold THEN pwm IS warm;
+        RULE 13 : IF target IS warm AND temperatura IS warm THEN pwm IS zero;
+        RULE 14 : IF target IS warm AND temperatura IS hot THEN pwm IS cold;
+        RULE 15 : IF target IS warm AND temperatura IS too_hot THEN pwm IS coldlh;
+
+	RULE 16 : IF target IS hot AND temperatura IS too_cold THEN pwm IS warmh;
+        RULE 17 : IF target IS hot AND temperatura IS cold THEN pwm IS warmlh;
+        RULE 18 : IF target IS hot AND temperatura IS warm THEN pwm IS warm;
+        RULE 19 : IF target IS hot AND temperatura IS hot THEN pwm IS zero;
+        RULE 20 : IF target IS hot AND temperatura IS too_hot THEN pwm IS cold;
+
+	RULE 21 : IF target IS too_hot AND temperatura IS too_cold THEN pwm IS warmvh;
+        RULE 22 : IF target IS too_hot AND temperatura IS cold THEN pwm IS warmh;
+        RULE 23 : IF target IS too_hot AND temperatura IS warm THEN pwm IS warmlh;
+        RULE 24 : IF target IS too_hot AND temperatura IS hot THEN pwm IS warm;
+        RULE 25 : IF target IS too_hot AND temperatura IS too_hot THEN pwm IS zero;
+
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK
