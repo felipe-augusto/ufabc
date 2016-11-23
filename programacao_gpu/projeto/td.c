@@ -114,9 +114,11 @@ int main() {
 	generateRandom(m, size, size);
 	print(m, size, size);
 
+	int flag = 1;
 	soma(mtest, m, size, size);
 	// TD - awkward way to do it (multiplas erosoes somando em uma nova matriz)
-	while(zeros(m, size, size)) {
+	while(flag) {
+		flag = 0;
 		// erosion
 		for(i = 0; i < size; i++) {
 			for(j = 0; j < size; j++) {
@@ -132,6 +134,10 @@ int main() {
 				if(mini != size * size) {
 					out[i][j] = mini;
 				}
+				if (mini != 0) {
+					flag = 1;
+				}
+
 			}
 		}
 		copy(m, out, size, size);

@@ -4,6 +4,7 @@
 #include <thread>
 #include <ctime>
 #include "ppm.h"
+#include <math.h>       /* fmin */
 
 //Split "mem" into "parts", e.g. if mem = 10 and parts = 4 you will have: 0,2,4,6,10
 //if possible the function will split mem into equal chuncks, if not 
@@ -203,12 +204,46 @@ void tst(ppm &image, ppm &image2, int left, int right) {
     }
 }
 
+// copia o conteudo de uma matriz para outro
+void soma(int * f, int * g, int M, int N) {
+  int i, j;
+  for(i = 0; i < M; i++) {
+    for(j = 0; j < N; j++) {
+        f[i * M + j] = f[i * M + j] + g[i * M + j];
+    }
+  }
+}
+
+// copia o conteudo de uma matriz para outro
+void copy(int * f, int  * g, int M, int N) {
+  int i, j;
+  for(i = 0; i < M; i++) {
+    for(j = 0; j < N; j++) {
+        f[i * M + j] = g[i * M + j];
+    }
+  }
+}
+
+// imprime um matriz
+void print(int * mat, int M, int N){
+  int i, j;
+
+  for(i = 0; i < M; i++) {
+    for(j = 0; j < N; j++) {
+        printf("%d ", mat[i * M + j]);
+    }
+    printf("\n");
+  }
+}
+
 int main() {
-    std::string fname = std::string("lena.ppm");
+    std::string fname = std::string("test.ppm");
 
     ppm image(fname);
     ppm image2(image.width, image.height);
     ppm image3(image.width, image.height);
+
+    int * image_array = (int *) malloc(sizeof(int) * image.height * image.width);
 
     //Number of threads to use (the image will be divided between threads)
     int parts = 4;
@@ -224,40 +259,112 @@ int main() {
             image2.r[i] = (unsigned char) black;
             image2.g[i] = (unsigned char) black;
             image2.b[i] = (unsigned char) black;
+            image_array[i] = black;
         } else {
             image2.r[i] = (unsigned char) white;
             image2.g[i] = (unsigned char) white;
             image2.b[i] = (unsigned char) white;
+            image_array[i] = white;
         }
     }
-    
-    // apply distance transform on the image
-    for(int i = 0; i < image2.width * image2.height; i++) {
-        int distancia_esq = 0;
-        int distancia_dir = 0;
-        // olha a esquerda
-        for(int j = i; j >= 0; j--) {
-            if((unsigned int) image2.r[i] == 0) {
-                image3.r[j] = (unsigned char) distancia_esq;
-                image3.g[j] = (unsigned char) distancia_esq;
-                image3.b[j] = (unsigned char) distancia_esq;
-                break;
-            }
-            distancia_esq++;
+
+    // print(image_array, image.width, image.height);
+
+    // prepare to do td
+
+    // aloca dinamica espaço para a matrix de saida
+    int * out = (int *) malloc(sizeof(int) * image.height * image.width);
+    for(int i = 0; i < image.width; i++){
+        for(int j = 0; j < image.height; j++) {
+            out[i * image.width + j] = 0;
         }
-        // olha a direita
-        for(int j = i; j < image2.width * image2.height; j++) {
-            if((unsigned int) image2.r[i] == 0) {
-                if((unsigned int) image3.r[j] > distancia_dir) {
-                    image3.r[j] = (unsigned char) distancia_dir;
-                    image3.g[j] = (unsigned char) distancia_dir;
-                    image3.b[j] = (unsigned char) distancia_dir;
+    }
+
+    // matrix com a soma
+    int * mtest = (int *) malloc(sizeof(int) * image.height * image.width);
+    for(int i = 0; i < image.width; i++){
+        for(int j = 0; j < image.height; j++) {
+            out[i * image.width + j] = 0;
+        }
+    }
+
+    int i, j, l, k;
+    int flag = 1;
+    soma(mtest, image_array, image.width, image.height);
+    // TD - awkward way to do it (multiplas erosoes somando em uma nova matriz)
+    while(flag) {
+        flag = 0;
+        // erosion
+        for(i = 0; i < image.width; i++) {
+            for(j = 0; j < image.height; j++) {
+                float mini = image.width * image.height;
+                for(l = -1; l < 2; l++) {
+                    for(k = -1; k < 2; k++) {
+                        // tratamento de bordas
+                        if(i + l >= 0 && i + l < image.width && j + k >= 0 && j + k < image.height) {
+                            mini = fmin(image_array[(i + l) * image.width + (j + k)], mini);
+                        }
+                    }
                 }
-                break;
+                if(mini != image.width * image.height) {
+                    out[i * image.width + j] = mini;
+                }
+                if (mini != 0) {
+                    flag = 1;
+                }
+
             }
-            distancia_dir++;
         }
+        copy(image_array, out, image.width, image.height);
+        soma(mtest, image_array, image.width, image.height);
     }
+
+    // find max level
+    int max = 0;
+    for(int i = 0; i < image.width * image.height; i++) {
+            if(mtest[i] > max) {
+                max = mtest[i];
+            }; 
+    }
+
+    float normalized = 255.0 / max;
+    for(int i = 0; i < image.width; i++) {
+        for(int j = 0; j < image.height; j++) {
+            image3.r[i * image.width + j] = (unsigned char) (mtest[i * image.width + j] * normalized);
+            image3.g[i * image.width + j] = (unsigned char) (mtest[i * image.width + j] * normalized);
+            image3.b[i * image.width + j] = (unsigned char) (mtest[i * image.width + j] * normalized);
+        }
+            
+    }
+
+    
+    // // apply distance transform on the image
+    // for(int i = 0; i < image2.width * image2.height; i++) {
+    //     int distancia_esq = 0;
+    //     int distancia_dir = 0;
+    //     // olha a esquerda
+    //     for(int j = i; j >= 0; j--) {
+    //         if((unsigned int) image2.r[i] == 0) {
+    //             image3.r[j] = (unsigned char) distancia_esq;
+    //             image3.g[j] = (unsigned char) distancia_esq;
+    //             image3.b[j] = (unsigned char) distancia_esq;
+    //             break;
+    //         }
+    //         distancia_esq++;
+    //     }
+    //     // olha a direita
+    //     for(int j = i; j < image2.width * image2.height; j++) {
+    //         if((unsigned int) image2.r[i] == 0) {
+    //             if((unsigned int) image3.r[j] > distancia_dir) {
+    //                 image3.r[j] = (unsigned char) distancia_dir;
+    //                 image3.g[j] = (unsigned char) distancia_dir;
+    //                 image3.b[j] = (unsigned char) distancia_dir;
+    //             }
+    //             break;
+    //         }
+    //         distancia_dir++;
+    //     }
+    // }
 
     image3.write("test3.ppm");
 
