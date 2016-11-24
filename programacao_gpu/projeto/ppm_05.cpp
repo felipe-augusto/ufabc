@@ -4,27 +4,30 @@
 #include <thread>
 #include <ctime>
 #include "ppm.h"
+#include "td_cpu.h"
+#include "utils.h"
+#include "td_gpu.h"
 #include <math.h>       /* fmin */
 
 //Split "mem" into "parts", e.g. if mem = 10 and parts = 4 you will have: 0,2,4,6,10
 //if possible the function will split mem into equal chuncks, if not 
 //the last chunck will be slightly larger
 
-std::vector<int> bounds(int parts, int mem) {
-    std::vector<int>bnd;
-    int delta = mem / parts;
-    int reminder = mem % parts;
-    int N1 = 0, N2 = 0;
-    bnd.push_back(N1);
-    for (int i = 0; i < parts; ++i) {
-        N2 = N1 + delta;
-        if (i == parts - 1)
-            N2 += reminder;
-        bnd.push_back(N2);
-        N1 = N2;
-    }
-    return bnd;
-}
+// std::vector<int> bounds(int parts, int mem) {
+//     std::vector<int>bnd;
+//     int delta = mem / parts;
+//     int reminder = mem % parts;
+//     int N1 = 0, N2 = 0;
+//     bnd.push_back(N1);
+//     for (int i = 0; i < parts; ++i) {
+//         N2 = N1 + delta;
+//         if (i == parts - 1)
+//             N2 += reminder;
+//         bnd.push_back(N2);
+//         N1 = N2;
+//     }
+//     return bnd;
+// }
 
 //Test if a given position (ii,jj) is "inside" the limits 0..nr_lines and 0..nr_columns
 
@@ -204,169 +207,69 @@ void tst(ppm &image, ppm &image2, int left, int right) {
     }
 }
 
-// copia o conteudo de uma matriz para outro
-void soma(int * f, int * g, int M, int N) {
-  int i, j;
-  for(i = 0; i < M; i++) {
-    for(j = 0; j < N; j++) {
-        f[i * M + j] = f[i * M + j] + g[i * M + j];
-    }
-  }
-}
-
-// copia o conteudo de uma matriz para outro
-void copy(int * f, int  * g, int M, int N) {
-  int i, j;
-  for(i = 0; i < M; i++) {
-    for(j = 0; j < N; j++) {
-        f[i * M + j] = g[i * M + j];
-    }
-  }
-}
-
-// imprime um matriz
-void print(int * mat, int M, int N){
-  int i, j;
-
-  for(i = 0; i < M; i++) {
-    for(j = 0; j < N; j++) {
-        printf("%d ", mat[i * M + j]);
-    }
-    printf("\n");
-  }
-}
-
 int main() {
+    // MEDIR O TEMPO
+    float time_;
+    clock_t t;
     std::string fname = std::string("test.ppm");
 
     ppm image(fname);
-    ppm image2(image.width, image.height);
-    ppm image3(image.width, image.height);
+    ppm image_cpu(image.width, image.height);
+    ppm image_gpu(image.width, image.height);
 
     int * image_array = (int *) malloc(sizeof(int) * image.height * image.width);
 
     //Number of threads to use (the image will be divided between threads)
     int parts = 4;
 
-    std::vector<int>bnd = bounds(parts, image.size);
-    int thre = 128;
-    float black = 255;
-    float white = 0;
+    //std::vector<int>bnd = bounds(parts, image.size);
 
-    // convert imagem from rgb to binary
+
+    // convert image from rgb to binary an put it into an input array
+    int thre = 128;
     for(int i = 0; i < image.width * image.height; i++) {
         if(0.2989 * (unsigned int) image.r[i] + 0.5870 * (unsigned int) image.g[i] + 0.1140 * (unsigned int) image.b[i] > thre) {
-            image2.r[i] = (unsigned char) black;
-            image2.g[i] = (unsigned char) black;
-            image2.b[i] = (unsigned char) black;
-            image_array[i] = black;
+            image_array[i] = 1;
         } else {
-            image2.r[i] = (unsigned char) white;
-            image2.g[i] = (unsigned char) white;
-            image2.b[i] = (unsigned char) white;
-            image_array[i] = white;
+            image_array[i] = 0;
         }
     }
 
-    // print(image_array, image.width, image.height);
 
-    // prepare to do td
-
-    // aloca dinamica espaço para a matrix de saida
-    int * out = (int *) malloc(sizeof(int) * image.height * image.width);
-    for(int i = 0; i < image.width; i++){
-        for(int j = 0; j < image.height; j++) {
-            out[i * image.width + j] = 0;
-        }
-    }
-
-    // matrix com a soma
+    // matrix de resposta que ira compor a image
     int * mtest = (int *) malloc(sizeof(int) * image.height * image.width);
     for(int i = 0; i < image.width; i++){
         for(int j = 0; j < image.height; j++) {
-            out[i * image.width + j] = 0;
+            mtest[i * image.width + j] = 0;
         }
     }
 
-    int i, j, l, k;
-    int flag = 1;
-    soma(mtest, image_array, image.width, image.height);
-    // TD - awkward way to do it (multiplas erosoes somando em uma nova matriz)
-    while(flag) {
-        flag = 0;
-        // erosion
-        for(i = 0; i < image.width; i++) {
-            for(j = 0; j < image.height; j++) {
-                float mini = image.width * image.height;
-                for(l = -1; l < 2; l++) {
-                    for(k = -1; k < 2; k++) {
-                        // tratamento de bordas
-                        if(i + l >= 0 && i + l < image.width && j + k >= 0 && j + k < image.height) {
-                            mini = fmin(image_array[(i + l) * image.width + (j + k)], mini);
-                        }
-                    }
-                }
-                if(mini != image.width * image.height) {
-                    out[i * image.width + j] = mini;
-                }
-                if (mini != 0) {
-                    flag = 1;
-                }
+    // IMPLEMENTAÇAO DE FATO DA TD EM CPU
+    time_ = 0;
+    t = clock();
+    mtest = td_cpu(image_array, image.height, image.width, 0, image.height);
+    time_ = (float)(clock() - t);
+    time_ = time_ / CLOCKS_PER_SEC;
+    printf("Tempo CPU: %5.1fms\n", time_ * 1000);
+    //td_cpu_parallel(image_array, image.height, image.width);
 
-            }
-        }
-        copy(image_array, out, image.width, image.height);
-        soma(mtest, image_array, image.width, image.height);
-    }
+    // find max level and normaliza to fit RGB 255 limit
+    image_cpu = normalize(image_cpu, find_max(image, mtest), mtest);
 
-    // find max level
-    int max = 0;
-    for(int i = 0; i < image.width * image.height; i++) {
-            if(mtest[i] > max) {
-                max = mtest[i];
-            }; 
-    }
+    // save td
+    image_cpu.write("td_cpu2.ppm");
 
-    float normalized = 255.0 / max;
-    for(int i = 0; i < image.width; i++) {
-        for(int j = 0; j < image.height; j++) {
-            image3.r[i * image.width + j] = (unsigned char) (mtest[i * image.width + j] * normalized);
-            image3.g[i * image.width + j] = (unsigned char) (mtest[i * image.width + j] * normalized);
-            image3.b[i * image.width + j] = (unsigned char) (mtest[i * image.width + j] * normalized);
-        }
-            
-    }
+    time_ = 0;
+    t = clock();
+    mtest = td_gpu(image_array);
+    time_ = (float)(clock() - t);
+    time_ = time_ / CLOCKS_PER_SEC;
+    printf("Tempo GPU: %5.1fms\n", time_ * 1000);
 
-    
-    // // apply distance transform on the image
-    // for(int i = 0; i < image2.width * image2.height; i++) {
-    //     int distancia_esq = 0;
-    //     int distancia_dir = 0;
-    //     // olha a esquerda
-    //     for(int j = i; j >= 0; j--) {
-    //         if((unsigned int) image2.r[i] == 0) {
-    //             image3.r[j] = (unsigned char) distancia_esq;
-    //             image3.g[j] = (unsigned char) distancia_esq;
-    //             image3.b[j] = (unsigned char) distancia_esq;
-    //             break;
-    //         }
-    //         distancia_esq++;
-    //     }
-    //     // olha a direita
-    //     for(int j = i; j < image2.width * image2.height; j++) {
-    //         if((unsigned int) image2.r[i] == 0) {
-    //             if((unsigned int) image3.r[j] > distancia_dir) {
-    //                 image3.r[j] = (unsigned char) distancia_dir;
-    //                 image3.g[j] = (unsigned char) distancia_dir;
-    //                 image3.b[j] = (unsigned char) distancia_dir;
-    //             }
-    //             break;
-    //         }
-    //         distancia_dir++;
-    //     }
-    // }
+    // find max level and normaliza to fit RGB 255 limit
+    image_gpu = normalize(image_gpu, find_max(image, mtest), mtest);
 
-    image3.write("test3.ppm");
+    image_gpu.write("td_gpu2.ppm");
 
     // //std::vector<std::thread> tt(parts-1);
     // std::vector<std::thread> tt;

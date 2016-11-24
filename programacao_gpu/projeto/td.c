@@ -4,18 +4,6 @@
 #include <time.h>
 
 
-
-// verifica se existe algum zero dentro de uma matriz
-int zeros(float ** m, int M, int N) {
-  int i, j;
-  for(i = 0; i < M; i++) {
-	for(j = 0; j < N; j++) {
-		if(m[i][j] != 0) return 1;
-	}
-  }
-  return 0;
-}
-
 // copia o conteudo de uma matriz para outro
 void soma(float ** f, float ** g, int M, int N) {
   int i, j;
