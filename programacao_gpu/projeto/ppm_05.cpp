@@ -6,6 +6,7 @@
 #include "ppm.h"
 #include "td_cpu.h"
 #include "utils.h"
+#include <sys/time.h>
 #include "td_gpu.h"
 #include <math.h>       /* fmin */
 
@@ -209,12 +210,13 @@ void tst(ppm &image, ppm &image2, int left, int right) {
 
 int main() {
     // MEDIR O TEMPO
-    float time_;
-    clock_t t;
+    struct timeval inicio, final;
+    int tmili;
     std::string fname = std::string("test.ppm");
 
     ppm image(fname);
     ppm image_cpu(image.width, image.height);
+    ppm image_cpu_parallel(image.width, image.height);
     ppm image_gpu(image.width, image.height);
 
     int * image_array = (int *) malloc(sizeof(int) * image.height * image.width);
@@ -244,62 +246,51 @@ int main() {
         }
     }
 
+    // .clock() parace nao ser razoavel
+    // http://stackoverflow.com/questions/5068697/pthreads-multicore-cpu-on-linux
+
     // IMPLEMENTAÇAO DE FATO DA TD EM CPU
-    time_ = 0;
-    t = clock();
-    mtest = td_cpu(image_array, image.height, image.width, 0, image.height);
-    time_ = (float)(clock() - t);
-    time_ = time_ / CLOCKS_PER_SEC;
-    printf("Tempo CPU: %5.1fms\n", time_ * 1000);
+    gettimeofday(&inicio, NULL);
+    mtest = td_cpu(image_array, image.height, image.width, 0, image.height); //, 
+    gettimeofday(&final, NULL);
+    tmili = (int) (1000 * (final.tv_sec - inicio.tv_sec) + (final.tv_usec - inicio.tv_usec) / 1000);
+    printf("Tempo CPU: %dms\n", tmili);
     //td_cpu_parallel(image_array, image.height, image.width);
 
     // find max level and normaliza to fit RGB 255 limit
     image_cpu = normalize(image_cpu, find_max(image, mtest), mtest);
 
     // save td
-    image_cpu.write("td_cpu2.ppm");
+    image_cpu.write("td_cpu.ppm");
 
-    time_ = 0;
-    t = clock();
+    // IMPLEMENTAÇAO DE FATO DA TD EM CPU PARALLEL
+    gettimeofday(&inicio, NULL);
+    mtest = td_cpu_parallel(image_array, image.height, image.width); //, 0, image.height
+    gettimeofday(&final, NULL);
+    tmili = (int) (1000 * (final.tv_sec - inicio.tv_sec) + (final.tv_usec - inicio.tv_usec) / 1000);
+    printf("Tempo CPU (Paralelo): %dms\n", tmili);
+    //td_cpu_parallel(image_array, image.height, image.width);
+
+    // find max level and normaliza to fit RGB 255 limit
+    image_cpu_parallel = normalize(image_cpu_parallel, find_max(image, mtest), mtest);
+
+    // save td
+    image_cpu_parallel.write("td_cpu_parallel.ppm");
+
+    //IMPLEMENTAÇAO DE FATO DA TD EM GPU GLOBAL
+    
+    gettimeofday(&inicio, NULL);
     mtest = td_gpu(image_array);
-    time_ = (float)(clock() - t);
-    time_ = time_ / CLOCKS_PER_SEC;
-    printf("Tempo GPU: %5.1fms\n", time_ * 1000);
+    gettimeofday(&final, NULL);
+    tmili = (int) (1000 * (final.tv_sec - inicio.tv_sec) + (final.tv_usec - inicio.tv_usec) / 1000);
+    printf("Tempo GPU: %dms\n", tmili);
 
     // find max level and normaliza to fit RGB 255 limit
     image_gpu = normalize(image_gpu, find_max(image, mtest), mtest);
 
-    image_gpu.write("td_gpu2.ppm");
+    image_gpu.write("td_gpu.ppm");
 
-    // //std::vector<std::thread> tt(parts-1);
-    // std::vector<std::thread> tt;
-
-    // time_t start, end;
-    // time(&start);
-    // //Lauch parts-1 threads
-    // for (int i = 0; i < parts - 1; ++i) {
-    //     tt.push_back(std::thread(tst, std::ref(image), std::ref(image2), bnd[i], bnd[i + 1]));
-    //     //tt[i] = std::thread(tst, std::ref(image), std::ref(image2), bnd[i], bnd[i + 1]);
-    // }
-
-    // //Use the main thread to do part of the work !!!
-    // for (int i = parts - 1; i < parts; ++i) {
-    //     tst(image, image2, bnd[i], bnd[i + 1]);
-    // }
-
-    // //Join parts-1 threads
-    // for(auto &e : tt){
-    //     e.join();
-    // }
-    // //for(int i = 0; i < parts - 1; ++i){
-    // //    tt[i].join();
-    // //}
-
-    // time(&end);
-    // std::cout << difftime(end, start) << " seconds" << std::endl;
-
-    // //Save the result
-    // image2.write("test.ppm");
+    mtest = td_cpu_parallel(image_array, image.height, image.width);
 
     return 0;
 }

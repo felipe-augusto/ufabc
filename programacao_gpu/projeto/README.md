@@ -1,5 +1,7 @@
-g++ -std=c++11 -pthread ppm.cpp ppm_05.cpp td_cpu.cpp
+g++ -std=c++11 -pthread ppm.cpp ppm_05.cpp td_cpu.cpp utils.cpp
 
+
+g++ -std=c++11 -pthread ppm.cpp test.cpp
 LA NO CUDA
 nvcc -x cu ppm.cpp ppm_05.cpp td_cpu.cpp td_gpu.cu -std=c++11
 
