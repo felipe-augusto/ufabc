@@ -65,41 +65,36 @@ void copy_p(int * f, int  * g, int M, int N, int start, int end) {
 }
 
 // core of parallel
-void td_core(int * in, int * out, int * mtest, int height, int width, int start, int end) {
+void td_core(int * in, int * out, int * mtest, int height, int width, int start, int end, int * flag) {
     int i, j, l, k;
     // TD - awkward way to do it (multiplas erosoes somando em uma nova matriz)
-    int flag = 1;
-    while(flag) {
-        flag = 0;
-        // erosion
-        for(i = start; i < end; i++) {
-            for(j = 0; j < height; j++) {
-                float mini = width * height;
-                for(l = -1; l < 2; l++) {
-                    for(k = -1; k < 2; k++) {
-                        // tratamento de bordas
-                        if(i + l >= 0 && i + l < width && j + k >= 0 && j + k < height) {
-                            mini = fmin(in[(i + l) * width + (j + k)], mini);
-                        }
+    int local_flag = 0;
+    for(i = start; i < end; i++) {
+        for(j = 0; j < height; j++) {
+            float mini = width * height;
+            for(l = -1; l < 2; l++) {
+                for(k = -1; k < 2; k++) {
+                    // tratamento de bordas
+                    if(i + l >= 0 && i + l < width && j + k >= 0 && j + k < height) {
+                        mini = fmin(in[(i + l) * width + (j + k)], mini);
                     }
                 }
-                if(mini != width * height) {
-                    out[i * width + j] = mini;
-                }
-                if (mini != 0) {
-                    flag = 1;
-                }
-
             }
+            if(mini != width * height) {
+                out[i * width + j] = mini;
+            }
+            if (mini != 0) {
+                local_flag = 1;
+            }
+
         }
-        copy_p(in, out, width, height, start, end);
-        soma_p(mtest, in, width, height, start, end);
+    }
+    if(flag[0] == 0 && local_flag == 1) {
+        flag[0] = 1;
     }
 }
 
 int * td_cpu(int * in_, int height, int width, int start, int end) {
-    float time_;
-    clock_t t;
 	int i, j, l, k;
 
     // faz uma copia local para nao modificar o in_
@@ -125,8 +120,6 @@ int * td_cpu(int * in_, int height, int width, int start, int end) {
             out[i * width + j] = 0;
         }
     }
-    time_ = 0;
-    t = clock();
 	int flag = 1;
 	soma(mtest, in, width, height);
 	// TD - awkward way to do it (multiplas erosoes somando em uma nova matriz)
@@ -156,9 +149,6 @@ int * td_cpu(int * in_, int height, int width, int start, int end) {
         copy(in, out, width, height);
         soma(mtest, in, width, height);
     }
-    time_ = (float)(clock() - t);
-    time_ = time_ / CLOCKS_PER_SEC;
-    printf("Tempo CPU (apenas TD): %5.1fms\n", time_ * 1000);
 	return(mtest);
 }
 
@@ -190,18 +180,27 @@ int * td_cpu_parallel(int * in_, int height, int width) {
         }
     }
 
+    // flag to know when it ends
+    int * flag = (int *) malloc(sizeof(int));
+    flag[0] = 1;
     std::vector<std::thread> tt;
     soma(mtest, in, width, height);
+    while(flag[0]) {
+        flag[0] = 0;
+        for(int i = 0; i < 3; i ++) {
+            // use 3 threads
+            tt.push_back(std::thread(td_core, in, out, mtest, height, width, bnd[i], bnd[i + 1], flag));
 
-    for(int i = 0; i < 3; i ++) {
-        //printf("%d %d\n", bnd[i], bnd[i + 1]);
-        //td_core(in, out, mtest, height, width, bnd[i], bnd[i + 1]);
-        tt.push_back(std::thread(td_core, in, out, mtest, height, width, bnd[i], bnd[i + 1]));
-    } 
-    // thread principal tbm trabalha
-    td_core(in, out, mtest, height, width, bnd[3], bnd[4]);
-    for(auto &e : tt){
-        e.join();
+        }
+        // thread principal tambem trabalha
+        td_core(in, out, mtest, height, width, bnd[3], bnd[4], flag);
+        // espera terminarem
+        for(auto &e : tt){
+            e.join();
+        }
+        copy(in, out, width, height);
+        soma(mtest, in, width, height); 
+        tt.clear(); 
     }
     return mtest;
 }

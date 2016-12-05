@@ -13,8 +13,6 @@ __global__ void copy(int *in, int *out, int * end);
 __global__ void fill(int *in, int * end);
 
 int * td_gpu(int * in) {
-  float time_;
-  clock_t t;
   int *out, *end, * flag;     // host copies a,b
   int *d_in,*d_out, *d_end, * d_flag;  // device copies a,b
   int size = N * sizeof(int);
@@ -32,10 +30,6 @@ int * td_gpu(int * in) {
 
   // copy input matrix an flag from host to device
   cudaMemcpy(d_in, in, size, cudaMemcpyHostToDevice);
-  cudaMemcpy(d_flag, flag, sizeof(int), cudaMemcpyHostToDevice);
-
-  time_ = 0;
-  t = clock();
 
   // set as true
   flag[0] = 1;
@@ -44,6 +38,8 @@ int * td_gpu(int * in) {
 
   // enquanto tiver
   while(flag[0]) {
+    flag[0] = 0;
+    cudaMemcpy(d_flag, flag, sizeof(int), cudaMemcpyHostToDevice);
     td<<<N/THREADS_PER_BLOCK,THREADS_PER_BLOCK>>>(d_in,d_out, d_flag);
     copy<<<N/THREADS_PER_BLOCK,THREADS_PER_BLOCK>>>(d_in, d_out, d_end);
     soma<<<N/THREADS_PER_BLOCK,THREADS_PER_BLOCK>>>(d_in, d_out, d_end);
@@ -53,17 +49,14 @@ int * td_gpu(int * in) {
   // Copy result back to host
   cudaMemcpy(out, d_out, size, cudaMemcpyDeviceToHost);
   cudaMemcpy(end, d_end, size, cudaMemcpyDeviceToHost);
-  time_ = (float)(clock() - t);
-  time_ = time_ / CLOCKS_PER_SEC;
-  printf("Tempo GPU (apenas TD): %5.1fms\n", time_ * 1000);
-  return end;
   // Cleanup
   free(in); free(out);
   cudaFree(d_in); cudaFree(d_out); cudaFree(d_end);
+  return end;
 }
 
 __global__ void td(int *in, int *out, int * d_flag) {
-  d_flag[0] = 0;
+  int local_flag = 0;
   int current_index = threadIdx.x + blockIdx.x * blockDim.x;
   int * local_in  = (int *)malloc(ROW * ROW);
 
@@ -83,7 +76,10 @@ __global__ void td(int *in, int *out, int * d_flag) {
   }
   // flag para continuear ou nao
   if(mini != 0) {
-    d_flag[0] = 1;
+    local_flag = 1;
+  }
+  if(d_flag[0] == 0 && local_flag == 1) {
+      d_flag[0] = 1;
   }
   
 }
