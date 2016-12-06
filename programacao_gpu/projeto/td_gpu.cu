@@ -8,6 +8,7 @@
 
 // forward declaration
 __global__ void td(int *in, int *out, int * d_flag);
+__global__ void td_shared(int *in, int *out, int * d_flag);
 __global__ void soma(int *in, int *out, int * end);
 __global__ void copy(int *in, int *out, int * end);
 __global__ void fill(int *in, int * end);
@@ -58,7 +59,6 @@ int * td_gpu(int * in) {
 __global__ void td(int *in, int *out, int * d_flag) {
   int local_flag = 0;
   int current_index = threadIdx.x + blockIdx.x * blockDim.x;
-  int * local_in  = (int *)malloc(ROW * ROW);
 
   int l, m;
   float mini = ROW * ROW;
@@ -73,6 +73,56 @@ __global__ void td(int *in, int *out, int * d_flag) {
 
   if(mini != ROW * ROW) {
     out[current_index] = mini;
+  }
+  // flag para continuear ou nao
+  if(mini != 0) {
+    local_flag = 1;
+  }
+  if(d_flag[0] == 0 && local_flag == 1) {
+      d_flag[0] = 1;
+  }
+  
+}
+
+__global__ void td_shared(int *in, int *out, int * d_flag) {
+  int local_flag = 0;
+  int gindex = threadIdx.x + blockIdx.x * blockDim.x;
+  int lindex = threadIdx.x;
+
+  // 3 linhas na pior das hipoteses
+  __shared__ int temp[3][ROW];
+
+  // checa para ver se a primeira linha existe
+  // se existe poe na primeira linha da memoria compartilhada
+  if(gindex - ROW > 0) {
+    temp[0][lindex] = in[gindex - ROW];
+  } else {
+    // se nao tiver preenche com 0 -> borda superior
+    temp[0][lindex] = 0;
+  }
+  // a segunda linha sempre vai existir
+  temp[1][lindex] = in[gindex];
+  // terceira linha borda inferior
+  if(gindex + ROW < ROW * ROW){
+    temp[2][lindex] = in[gindex + ROW];
+  } else {
+    // se nao tiver preenche com 0 -> borda superior
+    temp[2][lindex] = 0;
+  }
+
+  int l, m;
+  float mini = ROW * ROW;
+  for(l = 0; l <= 2; l++) {
+    for(m = -1; m <= 1; m++) {
+      // borda
+      if(lindex + m >= 0 && lindex + m < ROW) {
+        mini = fmin(temp[l][lindex + m], mini);
+      }
+    }
+  }
+
+  if(mini != ROW * ROW) {
+    out[gindex] = mini;
   }
   // flag para continuear ou nao
   if(mini != 0) {
