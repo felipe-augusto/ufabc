@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
-#define ROW 512
+#define ROW 2048
 #define N (ROW*ROW) //2048*2048
 #define THREADS_PER_BLOCK (ROW) //1024
 
@@ -13,7 +13,7 @@ __global__ void soma(int *in, int *out, int * end);
 __global__ void copy(int *in, int *out, int * end);
 __global__ void fill(int *in, int * end);
 
-int * td_gpu(int * in) {
+int * td_gpu(int * in, int type) {
   int *out, *end, * flag;     // host copies a,b
   int *d_in,*d_out, *d_end, * d_flag;  // device copies a,b
   int size = N * sizeof(int);
@@ -41,7 +41,11 @@ int * td_gpu(int * in) {
   while(flag[0]) {
     flag[0] = 0;
     cudaMemcpy(d_flag, flag, sizeof(int), cudaMemcpyHostToDevice);
-    td<<<N/THREADS_PER_BLOCK,THREADS_PER_BLOCK>>>(d_in,d_out, d_flag);
+    if(type) {
+      td_shared<<<N/THREADS_PER_BLOCK,THREADS_PER_BLOCK>>>(d_in,d_out, d_flag);
+    } else {
+      td<<<N/THREADS_PER_BLOCK,THREADS_PER_BLOCK>>>(d_in,d_out, d_flag);
+    }
     copy<<<N/THREADS_PER_BLOCK,THREADS_PER_BLOCK>>>(d_in, d_out, d_end);
     soma<<<N/THREADS_PER_BLOCK,THREADS_PER_BLOCK>>>(d_in, d_out, d_end);
     cudaMemcpy(flag, d_flag, sizeof(int), cudaMemcpyDeviceToHost);
@@ -51,7 +55,7 @@ int * td_gpu(int * in) {
   cudaMemcpy(out, d_out, size, cudaMemcpyDeviceToHost);
   cudaMemcpy(end, d_end, size, cudaMemcpyDeviceToHost);
   // Cleanup
-  free(in); free(out);
+  free(out);
   cudaFree(d_in); cudaFree(d_out); cudaFree(d_end);
   return end;
 }
@@ -89,26 +93,27 @@ __global__ void td_shared(int *in, int *out, int * d_flag) {
   int gindex = threadIdx.x + blockIdx.x * blockDim.x;
   int lindex = threadIdx.x;
 
-  // 3 linhas na pior das hipoteses
-  __shared__ int temp[3][ROW];
+  __shared__ int temp[ROW][3];
 
   // checa para ver se a primeira linha existe
   // se existe poe na primeira linha da memoria compartilhada
   if(gindex - ROW > 0) {
-    temp[0][lindex] = in[gindex - ROW];
+    temp[lindex][0] = in[gindex - ROW];
   } else {
     // se nao tiver preenche com 0 -> borda superior
-    temp[0][lindex] = 0;
+    temp[lindex][0] = 1;
   }
   // a segunda linha sempre vai existir
-  temp[1][lindex] = in[gindex];
+  temp[lindex][1] = in[gindex];
   // terceira linha borda inferior
   if(gindex + ROW < ROW * ROW){
-    temp[2][lindex] = in[gindex + ROW];
+    temp[lindex][2] = in[gindex + ROW];
   } else {
     // se nao tiver preenche com 0 -> borda superior
-    temp[2][lindex] = 0;
+    temp[lindex][2] = 1;
   }
+
+  __syncthreads();
 
   int l, m;
   float mini = ROW * ROW;
@@ -116,13 +121,13 @@ __global__ void td_shared(int *in, int *out, int * d_flag) {
     for(m = -1; m <= 1; m++) {
       // borda
       if(lindex + m >= 0 && lindex + m < ROW) {
-        mini = fmin(temp[l][lindex + m], mini);
+        mini = fmin(temp[lindex + m][l], mini);
       }
     }
   }
 
   if(mini != ROW * ROW) {
-    out[gindex] = mini;
+     out[gindex] = mini;
   }
   // flag para continuear ou nao
   if(mini != 0) {

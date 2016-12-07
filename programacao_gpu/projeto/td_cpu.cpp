@@ -44,26 +44,6 @@ void copy(int * f, int  * g, int M, int N) {
   }
 }
 
-// acumula o valor da segunda matrix na primeira
-void soma_p(int * f, int * g, int M, int N, int start, int end) {
-  int i, j;
-  for(i = start; i < end; i++) {
-    for(j = 0; j < N; j++) {
-        f[i * M + j] = f[i * M + j] + g[i * M + j];
-    }
-  }
-}
-
-// copia o conteudo de uma matriz para outro
-void copy_p(int * f, int  * g, int M, int N, int start, int end) {
-  int i, j;
-  for(i = start; i < end; i++) {
-    for(j = 0; j < N; j++) {
-        f[i * M + j] = g[i * M + j];
-    }
-  }
-}
-
 // core of parallel
 void td_core(int * in, int * out, int * mtest, int height, int width, int start, int end, int * flag) {
     int i, j, l, k;

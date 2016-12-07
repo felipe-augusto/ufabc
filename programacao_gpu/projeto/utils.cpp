@@ -38,3 +38,9 @@ ppm normalize(ppm image, int max, int * mtest) {
     }
     return image;
 }
+
+void zero(int * mtest, int width, int height) {
+    for(int i = 0; i < width * height; i++) {
+            mtest[i] = 0;
+    } 
+}
