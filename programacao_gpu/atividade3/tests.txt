@@ -1,0 +1,5 @@
+Imagem 100x100:   2.8ms
+Imagem 256x256:  12.3ms
+Imagem 512x512:  32.7ms
+Imagem 1024x1024: 114.8ms
+Imagem 2048x2048: 463.6ms
