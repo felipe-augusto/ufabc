@@ -1,0 +1,6 @@
+Erro: Arquivo não encontrado
+Aviso: Conexão lenta
+Erro: Falha na rede
+Aviso: Disco quase cheio
+Info: Download completo
+Erro: Memória insuficiente
