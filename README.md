@@ -4,6 +4,7 @@ Alguns dos códigos que eu desenvolvi durante o meu curso de Bacharelado em Ciê
 
 ## Disciplinas
 
+* [Algoritmos e Estruturas de Dados I](aed/README.md)
 * [Algoritmos e Estruturas de Dados II](aed_2/README.md)
 * [Lógicas Não Clássicas](logicas_nao_classicas/README.md)
 * [Processamento de Imagens utilizando GPU](programacao_gpu/README.md)
