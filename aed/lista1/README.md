@@ -4,7 +4,7 @@
 2. [Simple Array Sum](simplearray.c)
 3. [Compare the Triplets](triplets.c)
 4. [A Very Big Sum](bigsum.c)
-5. [Diagonal Difference](digfiff.c)
+5. [Diagonal Difference](digdiff.c)
 6. [Plus Minus](plusminus.c)
 7. [Array DS](arrayds.c)
 8. [2D Array DS](2darray.c)
