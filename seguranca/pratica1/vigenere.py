@@ -28,14 +28,3 @@ def decypher (message, cifra):
 cifrado = cypher(message, cifra)
 print cifrado
 print decypher(cifrado, cifra)
-
-# porque na tabela de substituicao olhando-se as linhas, o primeiro elemento
-# de cada linha deve ser exatamente a mesma letra da mensagem
-# ou seja se a cifra apenas 'aaaaa'
-# a cifragem deve dar a resposta identifica a propria mensagem
-# neste caso, teriamos que Ci = Pi
-# eh importante que seja de 0 a 25, isso garante que no caso acima, o zero
-# se some e nada aconteça
-# as colunas na tabela polifisica indicam quanto temos que avancar no alfabeto
-# com relacao a cifra entao temos originalmente Ci = Pi + Ki
-# entretanto o modulo de 26 é necessario para adicionar limites no alfabeto
