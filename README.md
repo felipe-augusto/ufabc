@@ -10,6 +10,7 @@ Alguns dos códigos que eu desenvolvi durante o meu curso de Bacharelado em Ciê
 * [Processamento de Imagens utilizando GPU](programacao_gpu/README.md)
 * [Programação Estruturada](programacao_estruturada/README.md)
 * [Programação Orientada a Objetos](poo/README.md)
+* [Segurança de Dados](seguranca/README.md)
 
 ## Sugestão
 
