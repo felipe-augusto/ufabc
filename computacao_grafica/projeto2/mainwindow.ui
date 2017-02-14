@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>858</width>
+    <height>387</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="8" column="2" colspan="2">
+     <widget class="QDoubleSpinBox" name="scaley">
+      <property name="singleStep">
+       <double>0.500000000000000</double>
+      </property>
+      <property name="value">
+       <double>1.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="11" column="1" colspan="3">
+     <widget class="QSlider" name="Sliderz">
+      <property name="maximum">
+       <number>359</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" rowspan="16">
+     <widget class="OpenGLWidget" name="openGLWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Eixo X</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1" colspan="3">
+     <widget class="QSlider" name="Sliderx">
+      <property name="maximum">
+       <number>359</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLabel" name="label_7">
+      <property name="text">
+       <string>0</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="3">
+     <widget class="QLabel" name="label_10">
+      <property name="text">
+       <string>359</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QCheckBox" name="AutoRotateX">
+      <property name="text">
+       <string>Auto Rotate X</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="2" colspan="2">
+     <widget class="QDoubleSpinBox" name="scalex">
+      <property name="singleStep">
+       <double>0.500000000000000</double>
+      </property>
+      <property name="value">
+       <double>1.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="2" rowspan="2" colspan="2">
+     <widget class="QLabel" name="label_4">
+      <property name="text">
+       <string>Scala em X</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Eixo Y</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="1" colspan="3">
+     <widget class="QSlider" name="Slidery">
+      <property name="maximum">
+       <number>359</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="1">
+     <widget class="QLabel" name="label_8">
+      <property name="text">
+       <string>0</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="3">
+     <widget class="QLabel" name="label_11">
+      <property name="text">
+       <string>359</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1">
+     <widget class="QCheckBox" name="AutoRotateY">
+      <property name="text">
+       <string>Auto Rotate Y</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="2" rowspan="2" colspan="2">
+     <widget class="QLabel" name="label_5">
+      <property name="text">
+       <string>Scala em Y</string>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="1">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Eixo Z</string>
+      </property>
+     </widget>
+    </item>
+    <item row="12" column="1">
+     <widget class="QLabel" name="label_9">
+      <property name="text">
+       <string>0</string>
+      </property>
+     </widget>
+    </item>
+    <item row="12" column="3">
+     <widget class="QLabel" name="label_12">
+      <property name="text">
+       <string>359</string>
+      </property>
+     </widget>
+    </item>
+    <item row="13" column="1">
+     <widget class="QCheckBox" name="AutoRotateZ">
+      <property name="text">
+       <string>Auto Rotate Z</string>
+      </property>
+     </widget>
+    </item>
+    <item row="13" column="2" colspan="2">
+     <widget class="QDoubleSpinBox" name="scalez">
+      <property name="singleStep">
+       <double>0.500000000000000</double>
+      </property>
+      <property name="value">
+       <double>1.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="14" column="2" colspan="2">
+     <widget class="QLabel" name="label_6">
+      <property name="text">
+       <string>Scala em Z</string>
+      </property>
+     </widget>
+    </item>
+    <item row="15" column="1" colspan="3">
+     <widget class="QComboBox" name="comboBox">
+      <item>
+       <property name="text">
+        <string>0 -vShader1</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>1 - Flat</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>2 - Gouraud</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>3 - Phong</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>858</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen_File"/>
+   </widget>
+   <widget class="QMenu" name="menuCarregar_Labirinto">
+    <property name="title">
+     <string>Carregar Labirinto</string>
+    </property>
+    <addaction name="actionOpen_File_2"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuCarregar_Labirinto"/>
+  </widget>
+  <action name="actionOpen_File">
+   <property name="text">
+    <string>Open File</string>
+   </property>
+  </action>
+  <action name="actionOpen_File_2">
+   <property name="text">
+    <string>Open File</string>
+   </property>
+  </action>
+  <action name="actionTest">
+   <property name="text">
+    <string>test</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>OpenGLWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header>openglwidget.h</header>
+   <slots>
+    <signal>statusBarMessage(QString)</signal>
+    <signal>enableComboShaders(bool)</signal>
+    <slot>showFileOpenDialog()</slot>
+    <slot>onUpdateBar()</slot>
+    <slot>autoRotatey(bool)</slot>
+    <slot>autoRotatex(bool)</slot>
+    <slot>autoRotatez(bool)</slot>
+    <slot>stopRotationx()</slot>
+    <slot>rescalex()</slot>
+    <slot>rescaley()</slot>
+    <slot>rescalez()</slot>
+    <slot>rotatex()</slot>
+    <slot>rotatey()</slot>
+    <slot>rotatez()</slot>
+    <slot>changeShader(int)</slot>
+    <slot>loadMaze()</slot>
+   </slots>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>actionOpen_File</sender>
+   <signal>triggered()</signal>
+   <receiver>openGLWidget</receiver>
+   <slot>showFileOpenDialog()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>159</x>
+     <y>142</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>openGLWidget</sender>
+   <signal>statusBarMessage(QString)</signal>
+   <receiver>statusBar</receiver>
+   <slot>showMessage(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>159</x>
+     <y>142</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>289</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Sliderx</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>openGLWidget</receiver>
+   <slot>rotatex()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>715</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>290</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slidery</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>openGLWidget</receiver>
+   <slot>rotatey()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>715</x>
+     <y>90</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>290</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Sliderz</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>openGLWidget</receiver>
+   <slot>rotatez()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>715</x>
+     <y>130</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>290</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>AutoRotateY</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>openGLWidget</receiver>
+   <slot>autoRotatey(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>645</x>
+     <y>171</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>290</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>AutoRotateX</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>openGLWidget</receiver>
+   <slot>autoRotatex(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>645</x>
+     <y>171</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>290</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>AutoRotateZ</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>openGLWidget</receiver>
+   <slot>autoRotatez(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>645</x>
+     <y>211</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>290</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scalex</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>openGLWidget</receiver>
+   <slot>rescalex()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>810</x>
+     <y>173</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>290</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scaley</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>openGLWidget</receiver>
+   <slot>rescaley()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>800</x>
+     <y>153</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>290</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scalez</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>openGLWidget</receiver>
+   <slot>rescalez()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>800</x>
+     <y>223</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>290</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>openGLWidget</receiver>
+   <slot>changeShader(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>715</x>
+     <y>323</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>290</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>openGLWidget</sender>
+   <signal>enableComboShaders(bool)</signal>
+   <receiver>comboBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>290</x>
+     <y>208</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>715</x>
+     <y>323</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionOpen_File_2</sender>
+   <signal>triggered()</signal>
+   <receiver>openGLWidget</receiver>
+   <slot>loadMaze()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>350</x>
+     <y>199</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

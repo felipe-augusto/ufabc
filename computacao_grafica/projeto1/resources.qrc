@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/shaders">
+        <file>vshader.glsl</file>
+        <file>fshader.glsl</file>
+        <file>finvert.glsl</file>
+        <file>vinvert.glsl</file>
+        <file>fedge.glsl</file>
+        <file>vedge.glsl</file>
+        <file>vgauss.glsl</file>
+        <file>fgauss.glsl</file>
+        <file>vbloom.glsl</file>
+        <file>fbloom.glsl</file>
+        <file>vgamma.glsl</file>
+        <file>fgamma.glsl</file>
+        <file>vsniper.glsl</file>
+        <file>fsniper.glsl</file>
+        <file>fpixel.glsl</file>
+        <file>vpixel.glsl</file>
+    </qresource>
+</RCC>
