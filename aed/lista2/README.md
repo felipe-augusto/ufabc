@@ -2,7 +2,7 @@
 
 1. Hackerland Radio Transmitters
 2. [Ice Cream Parlor](icecream.c)
-3. Missing Numbers
+3. [Missing Numbers](missing.c)
 4. Sherlock and Array
 5. Pairs
 6. Insertion Sort - Part 1
