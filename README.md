@@ -12,6 +12,7 @@ Alguns dos códigos que eu desenvolvi durante o meu curso de Bacharelado em Ciê
 * [Programação Estruturada](programacao_estruturada/README.md)
 * [Programação Orientada a Objetos](poo/README.md)
 * [Segurança de Dados](seguranca/README.md)
+* [Sistemas Digitais](sistemas_digitais/projeto)
 
 ## Sugestão
 
