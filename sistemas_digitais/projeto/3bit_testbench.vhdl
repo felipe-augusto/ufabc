@@ -12,55 +12,70 @@ architecture tb of testbench is
 
 -- DUT component
 component ula_3_bit is
-  port(
-    -- 3-bit inputs in ULA
-    A : in std_logic_vector(2 downto 0);
-    B : in std_logic_vector(2 downto 0);
-    -- flag for arithmetic MODE
-    M : in std_logic;
-    -- carry in
-    Ci : in std_logic;
-    -- 4 operation chooser
-    S0: in std_logic;
-    S1: in std_logic;
-
-    -- carry out output
-    Co: out std_logic;
-    -- 3-bit result output
-    F: out std_logic_vector(2 downto 0)
-  );
+    port(
+        -- toogle switchs input
+        SW : in std_logic_vector(9 downto 0);
+        -- led output
+        LEDR: out std_logic_vector(3 downto 0);
+        HEX0: out std_logic_vector(6 downto 0)
+    );
 end component;
 
-signal A, B: std_logic_vector(2 downto 0);
-signal M, Ci, S0, S1, Co: std_logic;
-signal F: std_logic_vector(2 downto 0);
+signal SW: std_logic_vector(9 downto 0);
+signal LEDR: std_logic_vector(3 downto 0);
+signal HEX0: std_logic_vector(6 downto 0);
 
 begin
   -- Connect DUT
-  DUT: ula_3_bit port map(A, B, M, Ci, S0, S1, Co, F);
+  DUT: ula_3_bit port map(SW, LEDR, HEX0);
 
   process
   begin
+    -- TEMPLATE: AAA BBB M Ci S0 S1
     -- THE FOLLOWING 4 CASES REFER TO THE LOGIC COMPONENT
     -- I.E: M = 0
     
-    -- LOGIC OPERATION 0 => Fi = Ai
-    M <= '0';
-    S0 <= '0';
-    S1 <= '0';
-    A <= "000";
+    -- SOME CASES OF LOGIC OPERATION 0 => Fi = Ai
+    SW <= "000---0-00";
 
     wait for 1 ns;
-    assert(F="000") report "LOGIC OPERATION 0 => Fi = Ai" severity error;
+    assert(LEDR="1111") report "LED FAIL IN LOGIC OPERATION 0 => Fi = Ai" severity error;
+    assert(HEX0="1000000") report "7 SEGMENT FAIL IN LOGIC OPERATION 0 => Fi = Ai" severity error;
 
-    M <= '0';
-    S0 <= '0';
-    S1 <= '0';
-    A <= "100";
+    SW <= "010---0-00";
 
     wait for 1 ns;
-    assert(F="100") report "LOGIC OPERATION 0 => Fi = Ai" severity error;
+    assert(LEDR="1101") report "LED FAIL IN LOGIC OPERATION 0 => Fi = Ai" severity error;
+    assert(HEX0="0100100") report "7 SEGMENT FAIL IN LOGIC OPERATION 0 => Fi = Ai" severity error;
 
+    SW <= "110---0-00";
+
+    wait for 1 ns;
+    assert(LEDR="1001") report "LED FAIL IN LOGIC OPERATION 0 => Fi = Ai" severity error;
+    assert(HEX0="0000010") report "7 SEGMENT FAIL IN LOGIC OPERATION 0 => Fi = Ai" severity error;
+    
+
+    SW <= "111---0-00";
+
+    wait for 1 ns;
+    assert(LEDR="1000") report "LED FAIL IN LOGIC OPERATION 0 => Fi = Ai" severity error;
+    assert(HEX0="1111000") report "7 SEGMENT FAIL IN LOGIC OPERATION 0 => Fi = Ai" severity error;
+
+    -- SOME CASES OF LOGIC OPERATION 1 => Fi = not Ai
+
+    SW <= "010---0-10";
+
+    wait for 1 ns;
+    assert(LEDR="1010") report "LED FAIL IN LOGIC OPERATION 1 => Fi = not Ai" severity error;
+    assert(HEX0="0010010") report "7 SEGMENT FAIL IN LOGIC OPERATION 1 => Fi = not Ai" severity error;
+    
+
+    SW <= "101---0-10";
+
+    wait for 1 ns;
+    assert(LEDR="1101") report "LED FAIL IN LOGIC OPERATION 1 => Fi = not Ai" severity error;
+    assert(HEX0="0100100") report "7 SEGMENT FAIL IN LOGIC OPERATION 1 => Fi = not Ai" severity error;
+    
     assert false report "Test done." severity note;
     wait;
   end process;
