@@ -8,6 +8,7 @@ Alguns dos códigos que eu desenvolvi durante o meu curso de Bacharelado em Ciê
 * [Algoritmos e Estruturas de Dados II](aed_2/README.md)
 * [Computação Gráfica](computacao_grafica)
 * [Lógicas Não Clássicas](logicas_nao_classicas/README.md)
+* [Paradigmas de Programação](paradigmas/README.md)
 * [Processamento de Imagens utilizando GPU](programacao_gpu/README.md)
 * [Programação Estruturada](programacao_estruturada/README.md)
 * [Programação Orientada a Objetos](poo/README.md)
